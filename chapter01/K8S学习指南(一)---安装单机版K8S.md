@@ -228,6 +228,10 @@ kubeconfig: Configured
 
 ----------------------------------
 ### 访问Kubernetes仪表板
+#### 安装Kubernetes仪表板
+```Bash
+
+```
 #### 获取kubernate仪表板的URL
 ```Bash
 ## 放置后台运行

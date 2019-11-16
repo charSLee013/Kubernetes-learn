@@ -45,7 +45,7 @@ minikube delete
 minikube start --vm-driver=none
 export CHANGE_MINIKUBE_NONE_USER=true
 
-echo "#-----------------------------+"
+echo -e "\r#-----------------------------+"
 echo ""
 echo "K8S has been installed..."
 echo ""
