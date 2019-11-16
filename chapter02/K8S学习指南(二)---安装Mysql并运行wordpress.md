@@ -1,81 +1,4 @@
-### K8S学习指南(一)---安装单机版K8S并运行wordpress
-
-##### `Kubernetes` 概述
-> `Kubernetes`(以下简称K8S) 是一个完备的分布式系统支撑平台。包含安全防护，负载均衡，多粒度的资源配额管理能力.
-> 以下介绍K8S组成部分
-
-#### **Service**
-* `Service`是分布式集群架构的核心,一个`Service`对象拥有如下关键特征.
-    - 拥有一个唯一指定的名字(比如**redis-server**).
-    - 拥有一个虚拟IP(**Cluster Ip或VIP**) 和端口号.
-    - 能够提供某种远程服务能力.
-    - 能被映射到提供这种服务能力的一组容器应用上.
-
-#### **Pod**
-* `Pod`是K8S最小的管理元素.
-    - 它是一个或多个容器的组合。这些容器共享存储、网络和命名空间，以及如何运行的规范
-    - 一个`Pod`的共享上下文是`Linux`命名空间、`cgroups`和其它潜在隔离内容的集合
-    - 在不同`Pod`中的容器，拥有不同的`IP`地址，因此不能够直接在进程间进行通信。容器间通常使用`Pod IP`地址进行通信.
-    - `Pod`运行在节点`Node`的环境上.
-    - 每个`Pod`运行一个特殊容器`Pause`.其他则为业务容器.
-    - 这些业务容器共享`Pause`容器的网络栈和`Volume`挂载卷.
-
-
-#### **Node**
-* Node是Pod真正运行的主机，可以物理机，也可以是虚拟机.
-    - 为了管理Pod，每个Node节点上至少要运行container runtime（比如docker或者rkt）、kubelet和kube-proxy服务.
-    - 这些进程负责`Pod`的创建,启动,监控,重启,销毁,以及实现软件模式的负载均衡器.
-    - 节点的状态信息包含
-        - Addresses. 描述网络地址
-        - Condition. 描述所有`Running`节点的状态
-        - Capacity. 描述节点上可用硬件资源:`CPU`,`RAM`,`DISK`,最大`Pod`数等.
-        - Info. 描述节点基础信息.如内核版本,OS名称等.
-
-
---------------------------------------------
-
-### 搭建`Kubernetes`
-#### 系统准备
-    * OS: Ubuntu 18.04.1 LTS X86_64
-    * USER: root
-
-> 机器建议使用能连接上谷歌的,因为K8S很多包和源都在海外.
-
-#### 搭建步骤
-
-**快速安装脚本**
-```Bash
-curl -sL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/kubernetes-install.sh | bash
-```
-
-1. 关闭防火墙
-```Bash
-systemctl disable firewalld
-systemctl stop firewalld
-```
-
-2. 安装`etcd`和`Kubernetes`软件(会自动安装`Docker`)
-```Bash
-yum update -y && yum install -y etcd kubernetes
-# 这里安装的是redhat7的证书.因为Kubernetes默认会去redhat拉去镜像.但是没有证书会报Error,所以先下载好证书
-wget http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
-rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem | tee /etc/rhsm/ca/redhat-uep.pem
-```
-
-3. 按顺序启动所有的服务:
-```Bash
-systemctl restart etcd
-systemctl restart docker
-systemctl restart kube-apiserver
-systemctl restart kube-controller-manager
-systemctl restart kube-scheduler
-systemctl restart kubelet
-systemctl restart kube-proxy
-```
-
-
-> 到这里,一个单机版的`Kubernetes`集群环境已经安装启动完成了
-
+### K8S学习指南(二)---安装Mysql并运行wordpress
 
 --------------------------------------------
 ### 启动`Mysql`服务
@@ -119,6 +42,42 @@ spec:           # RC的相关属性定义.
         env:                    # 指定容器中的环境变量
         - name: MYSQL_ROOT_PASSWORD     # 自定义root密码
           value: "123456"
+
+apiVersion: apps/v1   #指定api版本，此值必须在kubectl apiversion中
+kind: Deployment       #
+metadata:
+  name: wordpress-mysql
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123456"
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
 ```
 
 2. 创建好 `mysql-rc.yaml` 文件后,将他发布到`K8S`集群中,我们需要在`Master`节点中执行命令:

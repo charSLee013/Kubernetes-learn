@@ -17,7 +17,6 @@ systemctl start docker
 
 ## ready
 apt-get install -y curl wget apt-transport-https -y
-apt-get install -y virtualbox virtualbox-ext-pack
 
 ## install Minikube
 wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -39,21 +38,29 @@ sudo apt install -y kubeadm  kubernetes-cni
 ## check kubectl
 kubectl version -o json
 
-## minikube start
-minikube start --vm-driver=none --alsologtostderr -v=8
+## minikube cleanup and start
+minikube delete
+# debug
+# minikube start --vm-driver=none --alsologtostderr -v=8
+minikube start --vm-driver=none
+export CHANGE_MINIKUBE_NONE_USER=true
+
+echo "#-------------------+\n"
+echo "K8S has been installed...\n"
+echo "#-------------------+\n"
 
 ## check cluster
-kubectl cluster-info
+# kubectl cluster-info
 
-kubectl config view
+# kubectl config view
 
-kubectl get nodes
+# kubectl get nodes
 
-## list minikube
-minikube addons list
+# ## list minikube
+# minikube addons list
 
-## list  container image
-kubectl get pods --all-namespaces
+# ## list  container image
+# kubectl get pods --all-namespaces
 
-## get the URL of the kubernate dashboard
-minikube dashboard --url
+# ## get the URL of the kubernate dashboard
+# minikube dashboard --url
