@@ -118,8 +118,8 @@ minikube delete
 
 ## --vm-driver=none  不使用虚拟机而是用本机,会降低安全性
 export CHANGE_MINIKUBE_NONE_USER=true
-minikube start --vm-driver=none
-# minikube start --vm-driver=none --alsologtostderr -v=8    ## debug
+minikube start --vm-driver=none --extra-config=apiserver.Authorization.Mode=RBAC
+# minikube start --alsologtostderr -v=8    ## debug
 
 * minikube v1.5.2 on Ubuntu 18.04
 * Running on localhost (CPUs=2, Memory=3784MB, Disk=50331MB) ...
