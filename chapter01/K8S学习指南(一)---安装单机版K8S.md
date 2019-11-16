@@ -117,13 +117,142 @@ minikube delete
 # debug
 
 ## --vm-driver=none  不使用虚拟机而是用本机,会降低安全性
+export CHANGE_MINIKUBE_NONE_USER=true
 minikube start --vm-driver=none
 # minikube start --vm-driver=none --alsologtostderr -v=8    ## debug
 
-
-
-export CHANGE_MINIKUBE_NONE_USER=true
+* minikube v1.5.2 on Ubuntu 18.04
+* Running on localhost (CPUs=2, Memory=3784MB, Disk=50331MB) ...
+* OS release is Ubuntu 18.04.1 LTS
+* Preparing Kubernetes v1.16.2 on Docker '19.03.5' ...
+  - kubelet.resolv-conf=/run/systemd/resolve/resolv.conf
+* Downloading kubeadm v1.16.2
+* Downloading kubelet v1.16.2
+* Pulling images ...
+* Launching Kubernetes ... 
+* Configuring local host environment ...
+* 
+! The 'none' driver provides limited isolation and may reduce system security and reliability.
+! For more information, see:
+  - https://minikube.sigs.k8s.io/docs/reference/drivers/none/
+* 
+! kubectl and minikube configuration will be stored in /root
+! To use kubectl or minikube commands as your own user, you may need to relocate them. For example, to overwrite your own settings, run:
+* 
+  - sudo mv /root/.kube /root/.minikube $HOME
+  - sudo chown -R $USER $HOME/.kube $HOME/.minikube
+* 
+* This can also be done automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=true
+* Waiting for: apiserver
+* Done! kubectl is now configured to use "minikube"
 ```
+
+--------------------------------
+#### 检查安装组件的版本
+##### 检查集群状态
+```Bash
+#kubectl cluster-info
+
+Kubernetes master is running at https://172.19.0.15:8443
+KubeDNS is running at https://172.19.0.15:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
+###### 检查`Kubectl`的默认配置
+```Bash
+# kubectl config view
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /root/.minikube/ca.crt
+    server: https://172.19.0.15:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /root/.minikube/client.crt
+    client-key: /root/.minikube/client.key
+```
+
+##### 检查正在运行的节点
+```Bash
+# kubectl get nodes
+
+NAME       STATUS   ROLES    AGE   VERSION
+minikube   Ready    master   11m   v1.16.2
+```
+
+##### 检查Minikube的状态
+```Bash
+# minikube status
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+```
+
+#### 列出所有minikube插件
+```Bash
+# minikube addons list
+
+- addon-manager: enabled
+- dashboard: enabled
+- default-storageclass: enabled
+- efk: disabled
+- freshpod: disabled
+- gvisor: disabled
+- heapster: disabled
+- helm-tiller: disabled
+- ingress: disabled
+- ingress-dns: disabled
+- logviewer: disabled
+- metrics-server: disabled
+- nvidia-driver-installer: disabled
+- nvidia-gpu-device-plugin: disabled
+- registry: disabled
+- registry-creds: disabled
+- storage-provisioner: enabled
+- storage-provisioner-gluster: disabled
+```
+
+
+----------------------------------
+### 访问Kubernetes仪表板
+#### 获取kubernate仪表板的URL
+```Bash
+## 放置后台运行
+minikube dashboard --url &
+
+* Enabling dashboard ...
+* Verifying dashboard health ...
+* Launching proxy ...
+* Verifying proxy health ...
+http://127.0.0.1:45353/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+
+## 停止运行命令
+ps -ef | grep 'minikube dashboard' | grep -v grep | awk '{print $2}' | xargs kill -15
+```
+
+仪表盘可以无账号无密码就可以登录进去,只能本地进行预览,所以我们需要另外一种方法来通过外网IP进去
+
+```Bash
+# kubectl proxy --address='0.0.0.0' --disable-filter=true
+
+W1116 14:53:36.632255   28464 proxy.go:142] Request filter disabled, your proxy is vulnerable to XSRF attacks, please be cautious
+Starting to serve on [::]:8001
+```
+通过浏览器访问 http://服务器IP:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
+
 
 **快速安装脚本**
 ```Bash

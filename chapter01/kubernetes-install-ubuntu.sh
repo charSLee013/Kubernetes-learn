@@ -16,7 +16,7 @@ sudo systemctl enable docker
 systemctl start docker
 
 ## ready
-apt-get install -y curl wget apt-transport-https -y
+apt-get install -y curl wget apt-transport-https
 
 ## install Minikube
 wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -45,9 +45,11 @@ minikube delete
 minikube start --vm-driver=none
 export CHANGE_MINIKUBE_NONE_USER=true
 
-echo "#-------------------+\n"
-echo "K8S has been installed...\n"
-echo "#-------------------+\n"
+echo "#-----------------------------+"
+echo ""
+echo "K8S has been installed..."
+echo ""
+echo "#-----------------------------+"
 
 ## check cluster
 # kubectl cluster-info
