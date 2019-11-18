@@ -42,7 +42,7 @@ kubectl version -o json
 minikube delete
 # debug
 # minikube start --vm-driver=none --alsologtostderr -v=8
-minikube start --vm-driver=none --extra-config=apiserver.Authorization.Mode=RBAC
+minikube start --vm-driver=none
 export CHANGE_MINIKUBE_NONE_USER=true
 
 echo -e "\r#-----------------------------+"

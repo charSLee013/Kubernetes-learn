@@ -38,7 +38,7 @@
     * OS: Ubuntu 18.04.1 LTS X86_64
     * USER: root
     * CPU: 2+   (一定要 2croe +,否则创建minikube 创建的时候会报错)
-    * RAM: 4Gib+
+    * RAM: 2Gib+
 
 > 机器建议使用能连接上谷歌的,因为K8S很多包和源都在海外.
 
@@ -118,7 +118,7 @@ minikube delete
 
 ## --vm-driver=none  不使用虚拟机而是用本机,会降低安全性
 export CHANGE_MINIKUBE_NONE_USER=true
-minikube start --vm-driver=none --extra-config=apiserver.Authorization.Mode=RBAC
+minikube start --vm-driver=none
 # minikube start --alsologtostderr -v=8    ## debug
 
 * minikube v1.5.2 on Ubuntu 18.04
