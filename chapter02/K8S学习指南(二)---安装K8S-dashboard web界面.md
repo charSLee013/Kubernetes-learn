@@ -64,10 +64,10 @@ cd ~
 grep 'client-certificate-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.crt
 ```
 
-3. 生成client-certificate-data
+3. 生成`client-key-data`
 ```Bash
 cd ~
-grep 'client-certificate-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.crt
+grep 'client-key-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.key
 ```
 
 4. 生成`p12`
