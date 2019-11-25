@@ -216,8 +216,8 @@ wordpress   LoadBalancer   10.107.143.141   <pending>     80:32314/TCP   5m2
 --------------------------------------------
 #### 快速安装
 ```Bash
-kubectl apply -f 
-kubectl apply -f 
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter03/mysql-deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter03/wordpress-deployment.yaml
 ```
 --------------------------------------------
 ### 其他
