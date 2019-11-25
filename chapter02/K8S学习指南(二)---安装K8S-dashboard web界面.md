@@ -15,7 +15,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: admin-user
-  namespace: kubernetes-dashboard
+  namespace: kube-system
 ```
 
 执行`kubectl create`:
@@ -29,7 +29,7 @@ kubectl create -f admin-user.yaml
 在大多数情况下，使用`kops`或`kubeadm`任何其他流行的工具配置集群后，集群中`ClusterRole admin-Role`已经存在该集群。我们可以使用它并仅为`ClusterRoleBinding`我们创建`ServiceAccount`
 ```yaml
 # admin-user-role-binding.yaml
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
   name: admin-user
@@ -40,7 +40,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: admin-user
-  namespace: kubernetes-dashboard
+  namespace: kube-system
 ```
 
 执行`kubectl create`:
