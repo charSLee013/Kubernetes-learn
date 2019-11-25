@@ -12,7 +12,8 @@ kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/
 cp -f /etc/kubernetes/admin.conf ~/.kube/config
 grep 'client-certificate-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d > kubecfg.crt
 grep 'client-key-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.key
-openssl pkcs12 -export -clcerts -inkey kubecfg.key -in kubecfg.crt -out kubecfg.p12 -name "kubernetes-client"
+openssl pkcs12 -export -clcerts -inkey kubecfg.key -in kubecfg.crt -out kubecfg.p12 -name "kubernetes-client" -passout pass: 
+
 
 echo -e "\r#-----------------------------+"
 echo ""
