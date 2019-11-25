@@ -225,12 +225,12 @@ kubeconfig: Configured
 - storage-provisioner-gluster: disabled
 ```
 
-
+<!-- 
 ----------------------------------
 ### 访问Kubernetes仪表板
 #### 安装Kubernetes仪表板
 ```Bash
-
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
 ```
 #### 获取kubernate仪表板的URL
 ```Bash
@@ -255,10 +255,11 @@ ps -ef | grep 'minikube dashboard' | grep -v grep | awk '{print $2}' | xargs kil
 W1116 14:53:36.632255   28464 proxy.go:142] Request filter disabled, your proxy is vulnerable to XSRF attacks, please be cautious
 Starting to serve on [::]:8001
 ```
-通过浏览器访问 http://服务器IP:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
+通过浏览器访问 http://服务器IP:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login -->
 
 
-**快速安装脚本**
+---------------------------
+#### 快速安装脚本
 ```Bash
 curl -sL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter01/kubernetes-install-ubuntu.sh | bash
 ```

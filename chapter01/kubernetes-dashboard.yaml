@@ -155,7 +155,7 @@ metadata:
   name: kubernetes-dashboard
   namespace: kube-system
 spec:
-  tpye: NodePort
+  type: NodePort
   ports:
     - port: 443
       targetPort: 8443
