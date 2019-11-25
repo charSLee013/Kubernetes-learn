@@ -1,62 +1,65 @@
-apiVersion: v1
-kind: Service
+# mysql-deployment.yaml 
+
+apiVersion: v1            ## 指定APi版本
+kind: Service             ## 表明是 kubernetes Service 
 metadata:
-  name: wordpress-mysql
+  name: wordpress-mysql   ## Service 的全局唯一名称
   labels:
-    app: wordpress
+    app: wordpress        ## 用来识别pod
 spec:
   ports:
-    - port: 3306
-  selector:
+    - port: 3306          ## 这里是创建虚拟IP的端口,直接ping 和 curl 是不通的
+  selector:               ## 选择 pod.metadata.app&tier == wordpress&mysql 的pod(是的,一个service是可以对接多个pod的)
     app: wordpress
     tier: mysql
-  clusterIP: None
+  clusterIP: None         ## 不建立虚拟IP
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolumeClaim   ## 是用户存储的请求，PVC消耗PV的资源，可以请求特定的大小和访问模式，需要指定归属于某个Namespace，在同一个Namespace的Pod才可以指定对应的PVC
 metadata:
   name: mysql-pv-claim
   labels:
     app: wordpress
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce          ## 该volume只能被单个节点以读写的方式映射
   resources:
     requests:
-      storage: 5Gi
+      storage: 8Gi           ## 定义卷大小
 ---
+## 定义Pod
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
-kind: Deployment
+kind: Deployment          ## 指定创建资源的角色/类型.这里定义的是一个
 metadata:
-  name: wordpress-mysql
+  name: wordpress-mysql   ## 全局唯一名称
   labels:
     app: wordpress
-spec:
-  selector:
+spec:                     ## 相关属性定义
+  selector:               ## kubernetes 通过 spec.selector来筛选要控制的Pod
     matchLabels:
       app: wordpress
       tier: mysql
-  strategy:
-    type: Recreate
-  template:
-    metadata:
+  strategy:               ## 指新的Pod替换旧的Pod的策略
+    type: Recreate        ## Recreate  重建策略，在创建出新的Pod之前会先杀掉所有已存在的Pod
+  template:               ## 这里定义Pod模版.K8S会根据此模板创建实例(副本)
+    metadata:             ## # Pod 副本拥有的标签,对应 RC 的 selector.这里的labels必须匹配之前的spec.selector,否则创建一个无法匹配的Pod就会不停尝试创建新的Pod
       labels:
         app: wordpress
         tier: mysql
-    spec:
+    spec:                 ## 容器内定义内容
       containers:
-      - image: mysql:5.6
+      - image: mysql:5.6  ## 对应Docker Image
         name: mysql
         env:
-        - name: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD   ## 定义root密码
           value: "123456"
         ports:
         - containerPort: 3306
           name: mysql
-        volumeMounts:
+        volumeMounts:     ##  volumeMounts 字段保证了 /var/lib/mysql 文件夹由一个 PersistentVolume 支持
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
-      volumes:
+      volumes:            ## 指定Volume的类型和内容
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql-pv-claim
+          claimName: mysql-pv-claim   ## 这里表明使用上文创建的PVC
