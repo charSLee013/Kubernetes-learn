@@ -266,3 +266,5 @@ curl -sL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/c
 
 > 到这里,一个单机版的`Kubernetes`集群环境已经安装启动完成了
 
+-----------------------------------
+更多学习文章在[点击访问](https://github.com/charSLee013/Kubernetes-learn)
