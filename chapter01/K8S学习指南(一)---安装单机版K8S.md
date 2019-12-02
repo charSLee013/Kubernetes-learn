@@ -225,38 +225,6 @@ kubeconfig: Configured
 - storage-provisioner-gluster: disabled
 ```
 
-<!-- 
-----------------------------------
-### 访问Kubernetes仪表板
-#### 安装Kubernetes仪表板
-```Bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
-```
-#### 获取kubernate仪表板的URL
-```Bash
-## 放置后台运行
-minikube dashboard --url &
-
-* Enabling dashboard ...
-* Verifying dashboard health ...
-* Launching proxy ...
-* Verifying proxy health ...
-http://127.0.0.1:45353/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
-
-## 停止运行命令
-ps -ef | grep 'minikube dashboard' | grep -v grep | awk '{print $2}' | xargs kill -15
-```
-
-仪表盘可以无账号无密码就可以登录进去,只能本地进行预览,所以我们需要另外一种方法来通过外网IP进去
-
-```Bash
-# kubectl proxy --address='0.0.0.0' --disable-filter=true
-
-W1116 14:53:36.632255   28464 proxy.go:142] Request filter disabled, your proxy is vulnerable to XSRF attacks, please be cautious
-Starting to serve on [::]:8001
-```
-通过浏览器访问 http://服务器IP:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login -->
-
 
 ---------------------------
 #### 快速安装脚本
