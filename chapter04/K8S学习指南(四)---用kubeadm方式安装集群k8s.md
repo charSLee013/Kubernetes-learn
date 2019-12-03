@@ -215,6 +215,12 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 记录下`kubeadm join` 命令,等下在`node`机器上用这条命令
 
 
+##### 安装`Pod`网络插件
+这里用的是`calico`
+```Bash
+kubectl apply -f https://docs.projectcalico.org/v3.10/manifests/calico.yaml
+```
+
 ##### 确保所有的Pod都处于Running状态
 ```Bash
 kubectl get pod --all-namespaces -o wide
