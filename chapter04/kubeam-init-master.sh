@@ -76,7 +76,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 ## install flannel
-kubectl apply -f kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 ## add work for mater
 ##kubectl taint nodes node1 node-role.kubernetes.io/master-
