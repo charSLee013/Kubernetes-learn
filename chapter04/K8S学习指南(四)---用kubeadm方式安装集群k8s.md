@@ -216,9 +216,9 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 ##### 安装`Pod`网络插件
-这里用的是`calico`
+这里用的是`flannel`.
 ```Bash
-kubectl apply -f https://docs.projectcalico.org/v3.10/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
 
 ##### 确保所有的Pod都处于Running状态

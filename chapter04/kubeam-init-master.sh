@@ -75,8 +75,8 @@ sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
-## install coreDNS
-kubectl apply -f https://docs.projectcalico.org/v3.10/manifests/calico.yaml
+## install flannel
+kubectl apply -f kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 ## add work for mater
 ##kubectl taint nodes node1 node-role.kubernetes.io/master-
