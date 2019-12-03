@@ -37,16 +37,15 @@ dns:
 etcd:
   local:
     dataDir: /var/lib/etcd
-imageRepository: registry.aliyuncs.com/google_containers       # image的仓库源
+imageRepository: gcr.azk8s.cn/google_containers       # image的仓库源
 kind: ClusterConfiguration
 kubernetesVersion: v1.16.0
 networking:
   dnsDomain: cluster.local
   serviceSubnet: 10.96.0.0/12
-  podSubnet: 192.168.0.0/16
+  podSubnet: 10.244.0.0/16
 scheduler: {}
 EOF
-
 ## get extranet ip
 ip=$(curl -s -4 ip.sb)
 sed -i "s/IPADDRESS/$ip/g" kubeadm-init.yaml
@@ -76,7 +75,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 ## install flannel
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kube-flannel.yml
 
 ## add work for mater
-##kubectl taint nodes node1 node-role.kubernetes.io/master-
+kubectl taint nodes master001 node-role.kubernetes.io/master-

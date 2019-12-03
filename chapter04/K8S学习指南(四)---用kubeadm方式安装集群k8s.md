@@ -120,7 +120,7 @@ dns:
 etcd:
   local:
     dataDir: /var/lib/etcd
-imageRepository: registry.aliyuncs.com/google_containers       # image的仓库源
+imageRepository: gcr.azk8s.cn/google_containers       # image的仓库源
 kind: ClusterConfiguration
 kubernetesVersion: v1.16.0
 networking:
@@ -218,7 +218,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ##### 安装`Pod`网络插件
 这里用的是`flannel`.
 ```Bash
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kube-flannel.yml
 ```
 
 ##### 确保所有的Pod都处于Running状态
