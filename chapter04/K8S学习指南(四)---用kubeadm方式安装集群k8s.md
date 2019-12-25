@@ -120,7 +120,7 @@ dns:
 etcd:
   local:
     dataDir: /var/lib/etcd
-imageRepository: registry.aliyuncs.com/google_containers       # image的仓库源
+imageRepository: gcr.azk8s.cn/google_containers       # image的仓库源
 kind: ClusterConfiguration
 kubernetesVersion: v1.16.0
 networking:
@@ -218,7 +218,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ##### 安装`Pod`网络插件
 这里用的是`flannel`.
 ```Bash
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kube-flannel.yml
 ```
 
 ##### 确保所有的Pod都处于Running状态
@@ -229,16 +229,16 @@ kubectl get pod --all-namespaces -o wide
 输出
 
 ```
-NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE    IP             NODE              NOMINATED NODE   READINESS GATES
-kube-system   calico-kube-controllers-6b64bcd855-jz8m6   1/1     Running   0          2m3s   192.168.1.66   master001   <none>           <none>
-kube-system   calico-node-bv7jt                          1/1     Running   0          2m4s   10.16.0.8      master001   <none>           <none>
-kube-system   coredns-58cc8c89f4-kts7t                   1/1     Running   0          22m    192.168.1.65   master001   <none>           <none>
-kube-system   coredns-58cc8c89f4-z9bjv                   1/1     Running   0          22m    192.168.1.67   master001   <none>           <none>
-kube-system   etcd-master001                       1/1     Running   0          21m    10.16.0.8      master001   <none>           <none>
-kube-system   kube-apiserver-master001             1/1     Running   0          21m    10.16.0.8      master001   <none>           <none>
-kube-system   kube-controller-manager-master001    1/1     Running   0          21m    10.16.0.8      master001   <none>           <none>
-kube-system   kube-proxy-2t59q                           1/1     Running   0          22m    10.16.0.8      master001   <none>           <none>
-kube-system   kube-scheduler-master001             1/1     Running   0          21m    10.16.0.8      master001   <none>           <none>
+NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE     IP             NODE                                    NOMINATED NODE   READINESS GATES
+kube-system   coredns-667f964f9b-tnw52            1/1     Running   0          10m     10.244.0.2     master001                               <none>           <none>
+kube-system   coredns-667f964f9b-zz7wt            1/1     Running   0          10m     10.244.0.3     master001                               <none>           <none>
+kube-system   etcd-master001                      1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
+kube-system   kube-apiserver-master001            1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
+kube-system   kube-controller-manager-master001   1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
+kube-system   kube-flannel-ds-amd64-tkxkn         1/1     Running   0          4m31s   10.16.0.8      master001                               <none>           <none>
+kube-system   kube-proxy-8phxl                    1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
+kube-system   kube-proxy-sjwg8                    1/1     Running   0          2m37s   192.168.0.75   ecs-sn3-medium-2-linux-20191126233444   <none>           <none>
+kube-system   kube-scheduler-master001            1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
 ```
 
 ##### 如果想让`master`也参与工作负载(可选)
