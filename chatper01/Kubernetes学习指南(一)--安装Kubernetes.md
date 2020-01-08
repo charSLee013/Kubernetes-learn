@@ -43,6 +43,7 @@
 --------------------------------------------
 
 ### 搭建`Kubernetes`
+
 #### 系统准备
     * OS: CentOS Linux release 7.3.1611 (Core)
     * USER: root (生产环境中禁止使用`root`)
@@ -52,7 +53,7 @@
 #### 机器准备
 
 | OS | CPU | RAM | LocaoIP | NOTE |
-| :------ | :------ | :------ | :------ | :------ | :------ |
+| :------ | :------ | :------ | :------ | :------ |
 | CentOS Linux release 7.3 | 1 | 2Gib | 172.17.50.23 | master |
 | CentOS Linux release 7.3 | 1 | 2Gib | 172.17.50.24 | node1 |
 | CentOS Linux release 7.3 | 1 | 2Gib | 172.17.50.25 | node2 |
