@@ -123,8 +123,6 @@ sudo yum install -y kubelet kubeadm kubectl
 ## 设置开机自启动
 sudo systemctl enable kubelet && systemctl start kubelet
 ```
-<br />
-
 
 #### 检查`Kubernetes` 版本
 
@@ -143,7 +141,7 @@ Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCom
 #### 一键安装命令
 
 ```Bash
-curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter01/kubernetes-centos-install.sh | bash
+curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chatper01/kubernetes-centos-install.sh | bash
 ```
 -----------------------------------
 
