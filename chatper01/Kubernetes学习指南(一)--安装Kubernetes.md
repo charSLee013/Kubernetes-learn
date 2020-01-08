@@ -1,9 +1,16 @@
 ### Kubernetes学习指南(一)--快速部署集群
+
 ##### `Kubernetes` 概述
+
 > `Kubernetes`(以下简称K8S) 是一个完备的分布式系统支撑平台。包含安全防护，负载均衡，多粒度的资源配额管理能力.
-> 以下介绍K8S组成部分
+> 
+> 
+ 以下介绍K8S组成部分
+
+------------------------
 
 #### **Service**
+
 * `Service`是分布式集群架构的核心,一个`Service`对象拥有如下关键特征.
     - 拥有一个唯一指定的名字(比如**redis-server**).
     - 拥有一个虚拟IP(**Cluster Ip或VIP**) 和端口号.
@@ -11,6 +18,7 @@
     - 能被映射到提供这种服务能力的一组容器应用上.
 
 #### **Pod**
+
 * `Pod`是K8S最小的管理元素.
     - 它是一个或多个容器的组合。这些容器共享存储、网络和命名空间，以及如何运行的规范
     - 一个`Pod`的共享上下文是`Linux`命名空间、`cgroups`和其它潜在隔离内容的集合
@@ -21,6 +29,7 @@
 
 
 #### **Node**
+
 * Node是Pod真正运行的主机，可以物理机，也可以是虚拟机.
     - 为了管理Pod，每个Node节点上至少要运行container runtime（比如docker或者rkt）、kubelet和kube-proxy服务.
     - 这些进程负责`Pod`的创建,启动,监控,重启,销毁,以及实现软件模式的负载均衡器.
@@ -50,8 +59,11 @@
 
 
 ------------------------------------
+
 ### 部署步骤
+
 ##### 关闭防火墙
+
 ```Bash
 sudo systemctl stop firewalld
 sudo systemctl disable firewalld
@@ -67,10 +79,10 @@ sudo sed "s/SELINUX=*/SELINUX=disabled/g" -i /etc/selinux/config
 ```
 
 ##### 关闭`swap`(可选,如果不关闭后面部署的时候要忽略swap错误)
+
 ```Bash
 sudo swapoff -a
 ```
-
 
 ##### 安装`Docker`(v18.06.3)
 
@@ -126,8 +138,10 @@ Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCom
 或者使用下面**一键安装命令**一键部署
 
 -----------------------------------
+
 #### 一键安装命令
 
 ```Bash
 curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter01/kubernetes-centos-install.sh | bash
 ```
+
