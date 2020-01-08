@@ -45,7 +45,7 @@
 ### 搭建`Kubernetes`
 
 #### 系统准备
-    * OS: CentOS Linux release 7.3.1611 (Core)
+    * OS: CentOS Linux release 7 +
     * USER: root (生产环境中禁止使用`root`)
     * CPU: 1+   (如果CPUNumber 小于 2 时 ,`kubeadm init`需要添加` --ignore-preflight-errors=NumCPU` 选项
     * RAM: 2Gib+
@@ -145,4 +145,8 @@ Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCom
 ```Bash
 curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter01/kubernetes-centos-install.sh | bash
 ```
+-----------------------------------
 
+**注意事项** 
+* 一键安装命令会把`yum`源改成`Aliyun`,并且没有关闭`swap`
+* 根据`Pod Network`选择的不同,有些组件可能需要开启`iptables`转发功能(详情请参考组件官网)
