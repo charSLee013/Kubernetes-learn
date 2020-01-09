@@ -70,10 +70,13 @@ sed -i "s/IPADDRESS/$ip/g" kubeadm-init.yaml
 kubeadm init --config kubeadm-init.yaml --ignore-preflight-errors=NumCPU 
 ```
 
+如果重复`kubeadm init`要先`kubeadm reset` 重新初始化一次
+
 **输出**
 
 ```Bash
 # kubeadm init --config kubeadm-init.yaml --ignore-preflight-errors=NumCPU
+
 W0109 08:51:56.532812    3195 validation.go:28] Cannot validate kube-proxy config - no validator is available
 W0109 08:51:56.532880    3195 validation.go:28] Cannot validate kubelet config - no validator is available
 [init] Using Kubernetes version: v1.17.0
@@ -95,7 +98,7 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 Then you can join any number of worker nodes by running the following on each as root:
 
 kubeadm join 172.17.50.23:6443 --token abcdef.66wcf1rc5wk6637f \
-    --discovery-token-ca-cert-hash sha256:d3ab09c40be815ebf437a92ecc97f0402b08ce9ceba47607533178ea3986758e
+    --discovery-token-ca-cert-hash sha256:201961c9ccd44987f265b1a3d84de663332b50d0ecd2677a5b2be025416d1cea
 ```
 
 继续完成命令
@@ -119,9 +122,8 @@ kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/
 源文件`podSubnet`是`192.168.0.0/16` 
 这里修改为`192.168.0.0/24`
 
-
-
 ##### 确保所有的Pod都处于Running状态
+
 ```Bash
 kubectl get pod --all-namespaces -o wide
 ```
@@ -129,34 +131,35 @@ kubectl get pod --all-namespaces -o wide
 输出
 
 ```
-NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE     IP             NODE                                    NOMINATED NODE   READINESS GATES
-kube-system   coredns-667f964f9b-tnw52            1/1     Running   0          10m     10.244.0.2     master001                               <none>           <none>
-kube-system   coredns-667f964f9b-zz7wt            1/1     Running   0          10m     10.244.0.3     master001                               <none>           <none>
-kube-system   etcd-master001                      1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
-kube-system   kube-apiserver-master001            1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
-kube-system   kube-controller-manager-master001   1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
-kube-system   kube-flannel-ds-amd64-tkxkn         1/1     Running   0          4m31s   10.16.0.8      master001                               <none>           <none>
-kube-system   kube-proxy-8phxl                    1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
-kube-system   kube-proxy-sjwg8                    1/1     Running   0          2m37s   192.168.0.75   ecs-sn3-medium-2-linux-20191126233444   <none>           <none>
-kube-system   kube-scheduler-master001            1/1     Running   0          10m     10.16.0.8      master001                               <none>           <none>
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE     IP             NODE        NOMINATED NODE   READINESS GATES
+kube-system   calico-kube-controllers-648f4868b8-wmdlz   1/1     Running   0          69s     192.168.0.1    master001   <none>           <none>
+kube-system   calico-node-lmkhv                          1/1     Running   0          70s     172.17.50.23   master001   <none>           <none>
+kube-system   coredns-6cd559f5d5-2h4pb                   1/1     Running   0          2m38s   192.168.0.3    master001   <none>           <none>
+kube-system   coredns-6cd559f5d5-6zl68                   1/1     Running   0          2m38s   192.168.0.2    master001   <none>           <none>
+kube-system   etcd-master001                             1/1     Running   0          2m51s   172.17.50.23   master001   <none>           <none>
+kube-system   kube-apiserver-master001                   1/1     Running   0          2m51s   172.17.50.23   master001   <none>           <none>
+kube-system   kube-controller-manager-master001          1/1     Running   0          2m51s   172.17.50.23   master001   <none>           <none>
+kube-system   kube-proxy-5kfjh                           1/1     Running   0          2m38s   172.17.50.23   master001   <none>           <none>
+kube-system   kube-scheduler-master001                   1/1     Running   0          2m51s   172.17.50.23   master001   <none>           <none>
 ```
 
+
 ##### 如果想让`master`也参与工作负载(可选)
-> 使用kubeadm初始化的集群，出于安全考虑Pod不会被调度到Master Node上，也就是说Master Node一般不参与工作负载
+> 使用kubeadm初始化的集群，出于安全考虑Pod不会被调度到Master Node上，也就是说Master Node不推荐参与工作负载
 
 ```Bash
 # kubectl taint nodes master001 node-role.kubernetes.io/master-
 node/master001 untainted
 ```
 
-如果重复`kubeadm init`要先`kubeadm reset` 重新初始化一次
-
 ------------------------------
 
 #### 向Kubernetes集群添加Node
+
 > 添加节点前要安装完成 Docker,kubelet kubeadm kubectl 等
 
 ##### 添加命令
+
 ```Bash
 kubeadm join --token <token> <master-ip>:<master-port> --discovery-token-ca-cert-hash sha256:<hash> \
 ## 自定义node名称,否则用hostname
@@ -164,19 +167,29 @@ kubeadm join --token <token> <master-ip>:<master-port> --discovery-token-ca-cert
 ```
 
 ##### 查看`node节点`
+
 ```bash
 ## master 机器
-kubectl get nodes
+# kubectl get nodes
+
+NAME        STATUS     ROLES    AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                KERNEL-VERSION               CONTAINER-RUNTIME
+master001   Ready      master   11m   v1.17.0   172.17.50.23   <none>        CentOS Linux 7 (Core)   3.10.0-514.26.2.el7.x86_64   docker://18.6.3
+node1       Ready      <none>   56s   v1.17.0   172.17.50.24   <none>        CentOS Linux 7 (Core)   3.10.0-514.26.2.el7.x86_64   docker://18.6.3
+node2       NotReady   <none>   22s   v1.17.0   172.17.50.25   <none>        CentOS Linux 7 (Core)   3.10.0-514.26.2.el7.x86_64   docker://18.6.3
 ```
 
 ##### 查看token的值，在master节点运行以下命令
 > 如果没有token，请使用命令kubeadm token create 创建
 
 ```Bash
-kubeadm token list
+# kubeadm token list
+
+TOKEN                     TTL         EXPIRES                     USAGES                   DESCRIPTION                                                EXTRA GROUPS
+<YOUR_TOKEN>  23h         2020-01-10T09:10:05+08:00   authentication,signing   <none>                                                     system:bootstrappers:kubeadm:default-node-token
 ```
 
 ##### 查看hash值，在master节点运行以下命令
+
 ```Bash
 openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | \
    openssl dgst -sha256 -hex | sed 's/^.* //'
@@ -184,7 +197,9 @@ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outfor
 
 
 ---------------------------------------------
+
 ##### 其他
+
 ##### 移除节点
 在`master` 上执行
 
@@ -194,28 +209,26 @@ kubectl delete node <node name>
 ```
 
 在`node`上执行
+
 ```Bash
 kubeadm reset
 ```
 
 ##### 测试DNS
+
 在`master`上执行
 ```Bash
-kubectl run curl --image=radial/busyboxplus:curl -it
-```
+# kubectl run curl --image=radial/busyboxplus:curl -it
 
-输出
-
-```Bash
 kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
 If you don't see a command prompt, try pressing enter.
-[ root@curl-69c656fd45-nq2j2:/ ]$
+[ root@curl-69c656fd45-pg4pn:/ ]$
 ```
 
 然后再执行
 
 ```Bash
-[ root@curl-69c656fd45-nq2j2:/ ]$ nslookup kubearntes.default
+[ root@curl-69c656fd45-pg4pn:/ ]$ nslookup kubearntes.default
 Server:    10.96.0.10
 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
 
@@ -226,20 +239,24 @@ exit
 ```
 
 -----------------------------------
+
 #### 一键部署命令
+
 `Master`机器上执行
+
 ```Bash
-## 安装
-curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kubernetes-centos-install.sh | bash
+## 如果没有安装可以执行下面命令安装
+curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter01/kubernetes-centos-install.sh | bash
 
 ## 部署
-curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kubeam-init-master.sh | bash
+curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter02/kubeam-init-master.sh | bash
 ```
 
 `Node`机器上执行
+
 ```Bash
-## 安装
-curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kubernetes-centos-install.sh | bash
+## 如果没有安装可以执行下面命令安装
+curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter01/kubernetes-centos-install.sh | bash
 
 ## 从master复制join命令
 kubeadm join --token <token> <master-ip>:<master-port> --discovery-token-ca-cert-hash sha256:<hash> \

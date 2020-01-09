@@ -158,3 +158,6 @@ curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/
 **注意事项** 
 * 一键安装命令会把`yum`源改成`Aliyun`
 * 根据`Pod Network`选择的不同,有些组件可能需要开启`iptables`转发功能(详情请参考组件官网)
+
+-----------------------------------
+更多学习文章在[点击访问](https://github.com/charSLee013/Kubernetes-learn)
