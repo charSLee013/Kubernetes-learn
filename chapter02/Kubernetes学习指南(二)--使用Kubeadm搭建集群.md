@@ -1,11 +1,12 @@
-### Kubernetes学习指南(二)--集群搭建
+### Kubernetes学习指南(二)--使用Kubeadm搭建集群
 
-上一篇文章已经部署
+>上一篇文章已经在各个机器安装好`Kubernetes`,接下来首先在`Master`机器搭建`Master`
 
 -------------------------------
 #### 集群搭建
-> 
+
 ##### 在`Master`机器上创建配置文件`kubeadm-init.yaml`
+
 ```Bash
 cat <<EOF > kubeadm-init.yaml
 apiVersion: kubeadm.k8s.io/v1beta2
@@ -19,7 +20,7 @@ bootstrapTokens:
   - authentication
 kind: InitConfiguration
 localAPIEndpoint:
-  advertiseAddress: "IPADDRESS"     # 公网IP地址
+  advertiseAddress: "IPADDRESS"     # 内网IP地址
   bindPort: 6443            # API 端口
 nodeRegistration:
   criSocket: /var/run/dockershim.sock
@@ -30,7 +31,7 @@ nodeRegistration:
 ---
 apiServer:
   extraArgs: 
-    advertise-address: "IPADDRESS"    ## 公网机器互联需要
+    advertise-address: "IPADDRESS"    ## 机器互联需要
   certSANs:
   - "IPADDRESS"
   timeoutForControlPlane: 10m0s
@@ -43,51 +44,30 @@ dns:
 etcd:
   local:
     dataDir: /var/lib/etcd
-imageRepository: gcr.azk8s.cn/google_containers       # image的仓库源
+imageRepository: gcr.azk8s.cn/google_containers       # image的仓库源,这里使用Azure的镜像
 kind: ClusterConfiguration
-kubernetesVersion: v1.16.0
+kubernetesVersion: v1.17.0    ## 版本号一定要对上,截止笔者目前时间最新版已经是 1.17.0 了
 networking:
   dnsDomain: cluster.local
   serviceSubnet: 10.96.0.0/12
-  podSubnet: 192.168.0.0/16
+  podSubnet: 192.168.0.0/16   ## 部署Calico的Pod网络段最好是 192.168.0.0/24
 scheduler: {}
 EOF
 ```
 
-以上配置文件中的`IPADDRESS`作为占位符,可以通过以下命令替换成**公网IP**
+以上配置文件中的`IPADDRESS`作为占位符,可以通过以下命令替换成**内网IP** (默认读取`eth0`网卡的信息,手动指定请改写)
 
 ```Bash
-ip=$(curl -s -4 ip.sb)
+ip=$(ifconfig eth0 | grep "inet" | awk '{print $2}')
 sed -i "s/IPADDRESS/$ip/g" kubeadm-init.yaml
 ```
 
-##### 逐步安装`K8S`组件
-
-```Bash
-kubeadm init phase certs all --config kubeadm-init.yaml      
-kubeadm init phase kubeconfig all --config kubeadm-init.yaml 
-kubeadm init phase kubelet-start --config kubeadm-init.yaml    
-kubeadm init phase control-plane all --config kubeadm-init.yaml  
-kubeadm init phase etcd local --config kubeadm-init.yaml 
-```
-
-现在大部分服务器的网卡都是绑定`VPC`网卡而不是`公网IP`,到这一步如果继续创建的时候会出现访问超时的错误
-这里要修改 `/etc/kubernetes/manifests/etcd.yaml`
-```Bash
-#把--listen-client-urls 和 --listen-peer-urls 都改成0.0.0.0：xxx
-
-sed -i 's/--listen-client-urls=.*/--listen-client-urls=https:\/\/0.0.0.0:2379/g' /etc/kubernetes/manifests/etcd.yaml
-
-sed -i 's/--listen-peer-urls=.*/--listen-peer-urls=https:\/\/0.0.0.0:2380/g' /etc/kubernetes/manifests/etcd.yaml
-```
-
-继续安装完成剩下的步骤
+##### 开始部署
 
 ```Bash
 ## 这里忽略swap,cpu数量不足的错误
 ## 如果你关闭swap,cpu >=2 则可以取消忽略错误
-kubeadm init --skip-phases=preflight,certs,kubeconfig,kubelet-start,control-plane,etcd --config kubeadm-init.yaml --ignore-preflight-errors=Swap  --ignore-preflight-errors=NumCPU 
-
+kubeadm init --config kubeadm-init.yaml --ignore-preflight-errors=NumCPU 
 ```
 
 **输出**
@@ -139,9 +119,9 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 ##### 安装`Pod`网络插件
-这里用的是`flannel`.
+这里用的是`Calico`.
 ```Bash
-kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter02/kube-flannel.yml
 ```
 
 ##### 确保所有的Pod都处于Running状态

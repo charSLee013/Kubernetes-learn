@@ -8,8 +8,15 @@ sudo systemctl disable firewalld
 sudo setenforce 0
 sudo sed "s/SELINUX=*/SELINUX=disabled/g" -i /etc/selinux/config
 
+## set net.bridge.bridge = 1
+sudo cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sudo sysctl --system
+
 ## close swap
-# sudo swapoff -a
+sudo swapoff -a
 
 ## install docker.18.06.3 for aliyun.com
 sudo yum install -y yum-utils device-mapper-persistent-data lvm2

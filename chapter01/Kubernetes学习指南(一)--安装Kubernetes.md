@@ -79,10 +79,20 @@ sudo setenforce 0
 sudo sed "s/SELINUX=*/SELINUX=disabled/g" -i /etc/selinux/config
 ```
 
-##### 关闭`swap`(可选,如果不关闭后面部署的时候要忽略swap错误)
+##### 关闭`swap`
 
 ```Bash
 sudo swapoff -a
+```
+
+##### 设置iptables不对bridge的数据进行处理
+
+```Bash
+sudo cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sudo sysctl --system
 ```
 
 ##### 安装`Docker`(v18.06.3)
@@ -146,5 +156,5 @@ curl -sSL https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/
 -----------------------------------
 
 **注意事项** 
-* 一键安装命令会把`yum`源改成`Aliyun`,并且没有关闭`swap`
+* 一键安装命令会把`yum`源改成`Aliyun`
 * 根据`Pod Network`选择的不同,有些组件可能需要开启`iptables`转发功能(详情请参考组件官网)
