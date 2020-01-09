@@ -1,4 +1,4 @@
-### Kubernetes学习指南(一)--快速部署集群
+### Kubernetes学习指南(一)--安装Kubernetes
 
 ##### `Kubernetes` 概述
 
