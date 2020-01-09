@@ -50,7 +50,7 @@ kubernetesVersion: v1.17.0    ## 版本号一定要对上,截止笔者目前时�
 networking:
   dnsDomain: cluster.local
   serviceSubnet: 10.96.0.0/12
-  podSubnet: 192.168.0.0/16   ## 部署Calico的Pod网络段最好是 192.168.0.0/24
+  podSubnet: 192.168.0.0/24   ## 部署Calico的Pod网络段
 scheduler: {}
 EOF
 ```
@@ -73,22 +73,12 @@ kubeadm init --config kubeadm-init.yaml --ignore-preflight-errors=NumCPU
 **输出**
 
 ```Bash
-[init] Using Kubernetes version: v1.16.0
-[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 10m0s
-[apiclient] All control plane components are healthy after 0.014275 seconds
-[upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
-[kubelet] Creating a ConfigMap "kubelet-config-1.16" in namespace kube-system with the configuration for the kubelets in the cluster
-[upload-certs] Skipping phase. Please see --upload-certs
-[mark-control-plane] Marking the node master001 as control-plane by adding the label "node-role.kubernetes.io/master=''"
-[mark-control-plane] Marking the node master001 as control-plane by adding the taints [node-role.kubernetes.io/master:NoSchedule]
-[bootstrap-token] Using token: abcdef.66wcf1rc5wk6637f
-[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
-[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
-[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
-[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
-[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
-[addons] Applied essential addon: CoreDNS
-[addons] Applied essential addon: kube-proxy
+# kubeadm init --config kubeadm-init.yaml --ignore-preflight-errors=NumCPU
+W0109 08:51:56.532812    3195 validation.go:28] Cannot validate kube-proxy config - no validator is available
+W0109 08:51:56.532880    3195 validation.go:28] Cannot validate kubelet config - no validator is available
+[init] Using Kubernetes version: v1.17.0
+
+###略略略
 
 Your Kubernetes control-plane has initialized successfully!
 
@@ -104,11 +94,12 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 
 Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join <MASTER_IP>:6443 --token abcdef.66wcf1rc5wk6637f \
-    --discovery-token-ca-cert-hash sha256:<YOUR_TOKEN>
+kubeadm join 172.17.50.23:6443 --token abcdef.66wcf1rc5wk6637f \
+    --discovery-token-ca-cert-hash sha256:d3ab09c40be815ebf437a92ecc97f0402b08ce9ceba47607533178ea3986758e
 ```
 
 继续完成命令
+
 ```Bash
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -118,11 +109,17 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 记录下`kubeadm join` 命令,等下在`node`机器上用这条命令
 
 
-##### 安装`Pod`网络插件
-这里用的是`Calico`.
+##### 安装`Calico`网络插件
+
 ```Bash
-kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter02/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter02/calico.yaml
 ```
+
+>原文件地址在`https://docs.projectcalico.org/v3.11/manifests/calico.yaml`
+源文件`podSubnet`是`192.168.0.0/16` 
+这里修改为`192.168.0.0/24`
+
+
 
 ##### 确保所有的Pod都处于Running状态
 ```Bash
