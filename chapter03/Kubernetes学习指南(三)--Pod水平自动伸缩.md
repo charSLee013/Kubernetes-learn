@@ -226,9 +226,7 @@ kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/
 
 #### 一键构建测试环境
 ```Bash
-kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter03/php-apache/php-apache-deployment.yaml 
-kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter03/php-apache/php-apache-service.yaml
-kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter03/php-apache/php-apache-hpa.yaml
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter03/test-php-apache-hpa.yaml
 ```
 
 -----------------------------------
