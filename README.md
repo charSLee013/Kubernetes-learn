@@ -11,3 +11,7 @@ Kubernetes learning record
 
 ----------------------------------
 #### node
+
+* [Kubernetes Pod定义详解](https://github.com/charSLee013/Kubernetes-learn/blob/master/node/Pod%E5%AE%9A%E4%B9%89%E8%AF%A6%E8%A7%A3.md)
+
+* [Kubernetes Service相关详解](https://github.com/charSLee013/Kubernetes-learn/blob/master/node/Service%E7%9B%B8%E5%85%B3%E8%AF%A6%E8%A7%A3.md)
