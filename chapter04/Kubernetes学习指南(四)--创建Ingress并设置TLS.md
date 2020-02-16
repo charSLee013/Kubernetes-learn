@@ -60,7 +60,25 @@ Ingress 公开了从集群外部到集群内`Services`的`HTTP`和`HTTPS`路由,
 wget -O nginx-ingress-controller.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.29.0/deploy/static/mandatory.yaml
 
 ## 或者直接下载修改完成的部署文件
-wget -O nginx-ingress-controller.yaml 
+wget -O nginx-ingress-controller.yaml https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/nginx-ingress-controller.yaml
 ```
 
-这里在原基础上添加了默认的`backend`,用于在客户端访问的`URL`地址不存在时能返回一个正确应答
+修改如下:
+```Bash
+          args:
+            ...
+            ...
+            - --default-backend-service=$(POD_NAMESPACE)/nginx-errors   ## 默认错误导向
+            - --v=3   ## debug模式,仅在调试下使用
+```
+
+* 默认的`backend`,用于在客户端访问的`URL`地址不存在时能返回一个正确应答404应发.
+* 开启**debug**模式 `--v=3`,只适用于开发环境
+* 注释了`LimitRange`的性能限制,增大性能上限
+
+###### 部署命令
+
+```Bash
+kubectl apply -f https://raw.githubusercontent.com/charSLee013/Kubernetes-learn/master/chapter04/nginx-ingress-controller.yaml
+```
+
