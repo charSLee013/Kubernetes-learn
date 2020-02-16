@@ -9,6 +9,8 @@ Kubernetes learning record
 
 * [K8S学习指南(三)---Pod水平自动伸缩](https://github.com/charSLee013/Kubernetes-learn/blob/master/chapter03/Kubernetes%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97(%E4%B8%89)--Pod%E6%B0%B4%E5%B9%B3%E8%87%AA%E5%8A%A8%E4%BC%B8%E7%BC%A9.md)
 
+* [Kubernetes学习指南(四)--创建对外服务的HTTP和HTTPS路由](https://github.com/charSLee013/Kubernetes-learn/blob/master/chapter04/Kubernetes%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97(%E5%9B%9B)--%E5%88%9B%E5%BB%BA%E5%AF%B9%E5%A4%96%E6%9C%8D%E5%8A%A1%E7%9A%84HTTP%E5%92%8CHTTPS%E8%B7%AF%E7%94%B1%20Nginx-Ingress.md)
+
 ----------------------------------
 #### node
 
