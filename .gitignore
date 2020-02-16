@@ -1,2 +1,4 @@
 ./other
 ./oldBackup
+.DS_Store
+*/.DS_Store

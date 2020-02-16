@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/part-of: ingress-nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/part-of: ingress-nginx
+      annotations:
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
+    spec:
+      # 最多等待300秒后kill 掉Pod
+      terminationGracePeriodSeconds: 300
+      ## 使用宿主机网络
+      # hostNetwork: true
+      serviceAccountName: nginx-ingress-serviceaccount
+      # nodeSelector:
+      #   kubernetes.io/os: linux
+      containers:
+        - name: nginx-ingress-controller
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.26.2
+          args:
+            - /nginx-ingress-controller
+            - --configmap=$(POD_NAMESPACE)/nginx-configuration
+            - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+            - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+            - --publish-service=$(POD_NAMESPACE)/ingress-nginx
+            - --annotations-prefix=nginx.ingress.kubernetes.io
+            - --default-backend-service=$(POD_NAMESPACE)/nginx-errors   ## 默认错误导向
+            - --v=3   ## debug模式,仅在调试下使用
+
+          ## 限制容器的行为
+          securityContext:
+            ## 禁止提升到root权限
+            ## 设置为false将使得容器所有的子进程没有比父进程更高的特权
+            allowPrivilegeEscalation: true
+            ## 设置Linux Capabilities 权限
+            ## 具体什么是Linux Capabilities 可以看这篇文章 http://team.jiunile.com/blog/2019/12/capabilities.html
+            capabilities:
+              ## 删除全部特权
+              drop:
+                - ALL
+              
+              ## 允许绑定到小于1024的端口
+              add:
+                - NET_BIND_SERVICE
+            ## 指定用户ID为 33
+            ## www-data的用户ID/组ID都为 33
+            ## id -u www-data > 33
+            ## id -G www-data > 33
+            runAsUser: 33
+            
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+
+          ports:
+            - name: http
+              containerPort: 80
+              ## 这里将应用监听的80端口映射到物理机上
+              hostPort: 80
+
+            - name: https
+              containerPort: 443
+              hostPort: 443
+
+          ## livenessProbe 探针,检测应用健康程度
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+
+          ## 容器生命周期定义
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /wait-shutdown
+
+---
+
+# apiVersion: v1
+# kind: LimitRange
+# metadata:
+#   name: ingress-nginx
+#   namespace: kube-system
+#   labels:
+#     app.kubernetes.io/name: ingress-nginx
+#     app.kubernetes.io/part-of: ingress-nginx
+# spec:
+#   limits:
+#     - default:
+#         cpu: 1m
+#         memory: 1Mi
+#       max:
+#         cpu: "1"
+#         memory: 500Mi
+#       min:
+#         cpu: 10m
+#         memory: 100Mi
+#       type: Container
